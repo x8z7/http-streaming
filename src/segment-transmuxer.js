@@ -210,6 +210,7 @@ export const enqueueAction = (action, transmuxer) => {
 };
 
 export const reset = (transmuxer) => {
+  console.log('enqueueAction');
   enqueueAction('reset', transmuxer);
 };
 
