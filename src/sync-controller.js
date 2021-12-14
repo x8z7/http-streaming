@@ -6,6 +6,13 @@ import {sumDurations} from './playlist';
 import videojs from 'video.js';
 import logger from './util/logger';
 
+/**
+ * Лимит времени, который при ручной перемотке нужно прибавлять к стартовому значению сегмента, если он меньше 0
+ *
+ * @type {number}
+ */
+const PTS_LIMIT = 95444;
+
 export const syncPointStrategies = [
   // Stategy "VOD": Handle the VOD-case where the sync-point is *always*
   //                the equivalence display-time 0 === segment-index 0
@@ -450,6 +457,14 @@ export default class SyncController extends videojs.EventTarget {
       segment.end = timingInfo.end + mappingObj.mapping;
     } else if (mappingObj) {
       segment.start = timingInfo.start + mappingObj.mapping;
+
+      /**
+       * TODO фикс идёт в паре с фиксом ... для корректной перемотки через 25 минут
+       */
+      if (segment.start < 0) {
+        segment.start += PTS_LIMIT;
+      }
+
       segment.end = timingInfo.end + mappingObj.mapping;
     } else {
       return false;
